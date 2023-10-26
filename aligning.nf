@@ -134,6 +134,30 @@ process merge_files {
 }
 
 
+process talon {
+  publishDir "${params.outdir}"
+    tag "${cell_line}"
+    conda params.conda
+  input:
+    tuple val(cell_line), path(name), path("${name}.bai"), path(sample_trim_sam_onlyMD)
+//    path sample_trim_sam_onlyMD           
+  output:
+    path sample_slurm
+  script:
+  sample="${sample_trim_sam_onlyMD.simpleName}"
+  sample_slurm = "${sample_trim_sam_onlyMD.simpleName}.slurm" 
+  sample_path = "${params.outdir}/${sample_trim_sam_onlyMD}"
+  """  
+  echo ${sample} ${sample_path} ${params.description} ${params.platform}
+  cp ${params.example_slurm} ${sample_slurm}
+  sed -i  's/sample=.*/sample="'${sample}'"/' ${sample_slurm}
+  sed -i  's|sam_file_path=.*|sam_file_path="'${sample_path}'"|' ${sample_slurm}
+  sed -i  's/sample_description=.*/sample_description="'${params.description}'"/' ${sample_slurm}
+  sed -i  's/platform=.*/platform="'${params.platform}'"/' ${sample_slurm}
+  sbatch ${sample_slurm} 
+  """
+}
+
 
 def get_container(file_name) {
   parent = file(file_name).parent
@@ -160,6 +184,7 @@ workflow {
         | transcriptclean
         | groupTuple() 
         | merge_files
+        | talon
 //    bam_files = merge_files(al_reads.groupTuple())
 }
 
