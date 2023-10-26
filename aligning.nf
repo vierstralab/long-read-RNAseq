@@ -103,9 +103,8 @@ process transcriptclean {
     script:
 //    name_bam = "${name.simpleName}.bam"
 //    name_sam_sort = "${name.simpleName}_sorted.sam"
-    name_sam_clean = "${name.simpleName}_clean.sam"
-    """
-//    samtools view  -h ${name_bam} > ${name_sam_sort} 
+    sample_trim_sam_onlyMD_clean = "${sample_trim_sam_onlyMD.simpleName}_clean.sam"
+    """ 
     head ${params.spl_jnk}
     head ${params.known_variants_vcf}
     TranscriptClean -s ${sample_trim_sam_onlyMD} -g ${params.genome_fasta}  --spliceJns ${params.spl_jnk} --variants ${params.known_variants_vcf} -t ${task.cpus} -o "${sample_trim_sam_onlyMD.simpleName}"  --primaryOnly  
