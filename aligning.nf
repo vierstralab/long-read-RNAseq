@@ -21,7 +21,7 @@ process align_reads {
         tuple val(cell_line), path(fastq)
     output:
         tuple val(cell_line), path(name)
-//	path log_files
+//      path log_files
     
     script:
     name = "${fastq.simpleName}.sam"
@@ -50,6 +50,43 @@ process sam2bam_sort_indx {
     """
 }
 
+process soft_clip_trimming {
+//   publishDir "${params.dir_result}"
+   tag "${cell_line}:${name}"
+   conda "${params.conda}"
+   input:
+     tuple val(cell_line), path(sample)
+//     path dir_result
+   output:
+     tuple val(cell_line), path(sample_trim_sam)
+   script: 
+   sample_trim_sam="${sample.simpleName}_wo_soft_clipped_noQ.sam"
+   sample_trim_bam="${sample.simpleName}_wo_soft_clipped_noQ.bam"
+   """
+   echo ${sample}
+   echo ${sample_trim_bam}
+   samtools index ${sample}
+   python3 /net/seq/data2/projects/amuravyova/nf-long-reads-align/remove_soft_clipping_part_v2_modified.py ${sample} ${sample_trim_bam}
+   samtools view -h ${sample_trim_bam} > ${sample_trim_sam}
+   """
+}
+
+process take_only_MD {
+//   publishDir "${params.dir_result}"
+   conda "${params.conda}"
+   input:
+     tuple val(cell_line), path(sample_trim_sam)
+   output:
+     tuple val(cell_line), path(sample_trim_sam_onlyMD)
+   script: 
+   sample_trim_sam_onlyMD = "${sample_trim_sam.simpleName}_onlyMD.sam"
+   """
+   samtools view -H ${sample_trim_sam}  >> ${sample_trim_sam_onlyMD} 
+   samtools view ${sample_trim_sam} | grep  "MD:"  >> ${sample_trim_sam_onlyMD}  
+   """
+}
+
+
 process transcriptclean {
     container "/home/amuravyova/nextflow/transcriptclean_v2.0.2_cv1.sif"  //   container "biocontainers/transcriptclean:v2.0.2_cv1"
     containerOptions "${get_container(params.genome_fasta)} ${get_container(params.spl_jnk)} ${get_container(params.known_variants_vcf)}"
@@ -57,19 +94,21 @@ process transcriptclean {
     cpus 5 
 
     input:
-        tuple val(cell_line), path(name)
+//        tuple val(cell_line), path(name)
+        tuple val(cell_line), path(sample_trim_sam_onlyMD)
     output:
-        tuple val(cell_line), path(name_sam_clean)
+//        tuple val(cell_line), path(name_sam_clean)
+        tuple val(cell_line), path(sample_trim_sam_onlyMD_clean)
 
     script:
-    name_bam = "${name.simpleName}.bam"
-    name_sam_sort = "${name.simpleName}_sorted.sam"
+//    name_bam = "${name.simpleName}.bam"
+//    name_sam_sort = "${name.simpleName}_sorted.sam"
     name_sam_clean = "${name.simpleName}_clean.sam"
     """
-    samtools view  -h ${name_bam} > ${name_sam_sort} 
+//    samtools view  -h ${name_bam} > ${name_sam_sort} 
     head ${params.spl_jnk}
     head ${params.known_variants_vcf}
-    TranscriptClean -s ${name_sam_sort} -g ${params.genome_fasta}  --spliceJns ${params.spl_jnk} --variants ${params.known_variants_vcf} -t ${task.cpus} -o "${name.simpleName}"  --primaryOnly  
+    TranscriptClean -s ${sample_trim_sam_onlyMD} -g ${params.genome_fasta}  --spliceJns ${params.spl_jnk} --variants ${params.known_variants_vcf} -t ${task.cpus} -o "${sample_trim_sam_onlyMD.simpleName}"  --primaryOnly  
     """
 }
 
@@ -96,14 +135,15 @@ process merge_files {
 }
 
 
+
 def get_container(file_name) {
   parent = file(file_name).parent
   container = "--bind ${parent}"
   if (file(file_name).exists()) {
-	old_parent = file(file_name).toRealPath().parent
-	if (old_parent != parent) {
-		container += ",${old_parent}"
-	}
+        old_parent = file(file_name).toRealPath().parent
+        if (old_parent != parent) {
+                container += ",${old_parent}"
+        }
   } 
   return container
 }
@@ -116,8 +156,12 @@ workflow {
         | set_key_for_group_tuple
         | align_reads
         | sam2bam_sort_indx
+        | soft_clip_trimming
+        | take_only_MD 
         | transcriptclean
         | groupTuple() 
         | merge_files
 //    bam_files = merge_files(al_reads.groupTuple())
 }
+
+
