@@ -1,5 +1,6 @@
 # long-read-RNAseq
 PIPELINE for identifying and quantifying known and novel genes/isoforms in long-read RNA-seq data
+
 [link to description with pictures](https://docs.google.com/document/d/1mj8DaMMQsriclH1m1FKiJzLcJz12DW3rtCmNr7nHnaA/edit#heading=h.dawyqbpfox7p)
 
 
@@ -7,7 +8,9 @@ PIPELINE for identifying and quantifying known and novel genes/isoforms in long-
 Nextflow pipeline for identifying and quantifying known and novel genes/isoforms in long-read RNA-seq data. Now it works with human data from Oxford Nanopore platforms (in the future - PacBio and mice). 
 
 **alignment** [Minimap2](https://github.com/lh3/minimap2)  mapping Oxford Nanopore reads to the genome
+
 **cleaning** [Transcriptclean](https://github.com/dewyman/TranscriptClean)  corrects mismatches, microindels, and noncanonical splice junctions in long reads that have been mapped to the genome (to fix artifactual noncanonical splice junctions) 
+
 **gene / isoform searching**  [TALON](https://github.com/dewyman/TALON)  identifying and quantifying known and novel genes / isoforms in long-read transcriptome data sets
 
 ## INPUTS
@@ -36,14 +39,14 @@ Example - _/net/seq/data2/projects/amuravyova/nf-long-reads-align/FETAL/11_20_fe
 1. create `samples_file`
 2. set the required variable values (`samples_file`, `outdir`, `description`, `platform`)  in file _/net/seq/data2/projects/amuravyova/nf-long-reads-align/long-read-RNAseq/**params.config**_ 
 > [!CAUTION]
-> (save file changes !)
+> save file changes !
 3. run in tmux : 
 ```
 module load nextflow/22.04.3 
 nextflow run test_tuples.nf  -profile Altius -entry tuple
 ```
 > [!IMPORTANT]
-> (please check that nobody else runs it now !)
+> please check that nobody else runs it now !
 
 **Results** will be in the folder you set as `outdir` in file _params.config_
 
