@@ -39,7 +39,7 @@ Example - _/net/seq/data2/projects/amuravyova/nf-long-reads-align/FETAL/11_20_fe
 
 ## HOW TO RUN
 1. create `samples_file`
-2. set the required variable values (`samples_file`, `outdir`, `description`, `platform`)  in file _/net/seq/data2/projects/amuravyova/nf-long-reads-align/long-read-RNAseq/**params.config**_ 
+2. set the required variable values (`samples_file`, `outdir`, `description`, `platform`)  in file _**params.config**_ 
 > [!CAUTION]
 > save file changes !
 3. run in tmux : 
