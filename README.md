@@ -13,6 +13,8 @@ Nextflow pipeline for identifying and quantifying known and novel genes/isoforms
 
 **gene / isoform searching**  [TALON](https://github.com/dewyman/TALON)  identifying and quantifying known and novel genes / isoforms in long-read transcriptome data sets
 
+![image text](https://github.com/vierstralab/long-read-RNAseq/blob/develop/Screen%20Shot%202024-02-12%20at%2010.15.20%20AM.png)
+
 ## INPUTS
 In file `params.config`:
 
@@ -51,7 +53,7 @@ nextflow run test_tuples.nf  -profile Altius -entry tuple
 **Results** will be in the folder you set as `outdir` in file _params.config_
 
 ## OUTPUTS
-image
+![image text](https://github.com/vierstralab/long-read-RNAseq/blob/develop/Screen%20Shot%202024-02-14%20at%208.57.33%20AM.png)
 
 [QC description](https://docs.google.com/document/d/1cqXZL64vZTV6GQu9x4Il9D0XDdYHMc8J0nMVN1uZ_p8/edit)
 
