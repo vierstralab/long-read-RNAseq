@@ -4,12 +4,17 @@ import sys
 def main():
     bam_file = sys.argv[1]
     out_file = sys.argv[2]
+    out_QC_file = open(sys.argv[3],"w")
+    out_skipped_reads = open(sys.argv[4],"w")
+
+    out_QC_file.write("read_name"+"\t"+"clip_5"+"\t"+"clip_3"+"\n")
 
     with pysam.AlignmentFile(bam_file, 'rb') as inbam, pysam.AlignmentFile(out_file, 'wb', header=inbam.header) as outbam:
         for i, read in enumerate(inbam):
             print(f"Processing read {i}: {read.query_name}")
-            if read.is_unmapped or read.query_sequence is None : # or read.query_qualities is None:
+            if read.is_unmapped or read.query_sequence is None or read.query_qualities is None:
                 print(f"Skipping read {i}: {read.query_name} due to missing information")
+                out_skipped_reads.write(str(read.query_name)+"\n")
                 continue
 
             newcigar = []
@@ -57,6 +62,9 @@ def main():
             read.tags = read.tags + newtags
 
             outbam.write(read)
+
+            if clip_5 or clip_3:
+                out_QC_file.write(str(read.query_name)+"\t"+str(clip_5)+"\t"+str(clip_3)+"\n")
 
 
 if __name__ == '__main__':
