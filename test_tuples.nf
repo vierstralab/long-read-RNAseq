@@ -50,7 +50,7 @@ process soft_clip_trimming {
    samtools view  -b  ${name_sam} >  ${name_sam}_unsorted.bam
    samtools sort  -O bam ${name_sam}_unsorted.bam > ${name_bam}
    samtools index ${name_bam}
-   python3 /net/seq/data2/projects/amuravyova/nf-long-reads-align/long-read-RNAseq/remove_soft_clipping_part_v2_modified.py ${name_bam} ${sample_trim_bam} ${sample_trim_QC} ${sample_skipped_reads}
+   python /net/seq/data2/projects/amuravyova/nf-long-reads-align/long-read-RNAseq/remove_soft_clipping_part_v2_modified.py ${name_bam} ${sample_trim_bam} ${sample_trim_QC} ${sample_skipped_reads}
    samtools view -h ${sample_trim_bam} > ${sample_trim_sam}
    """
 }
@@ -139,8 +139,8 @@ process talon {
   platform="${params.platform}"
   ref_fasta="${params.genome_fasta}"
   cov=0.9
-  build="human_GRCh38_no_alt"
-  annotation_v="human_gencode.v29"  
+  build="${params.build}"
+  annotation_v="${params.annotation_v}"  
   db="${ln}.db"
 
   """
@@ -212,6 +212,24 @@ process talon {
   """
 }
 
+
+process QC {
+    publishDir "${params.outdir}/QC"
+    tag "${ln}"
+    conda params.conda
+    input:
+        val(ln)
+    output:
+//        path("${QC_csv}")
+    
+    script:
+    QC_csv = "${ln}_QC.csv"
+    """
+    bash /net/seq/data2/projects/amuravyova/nf-long-reads-align/long-read-RNAseq/QC_analysis.sh ${ln}
+    """
+}
+
+
 def get_container(file_name) {
   parent = file(file_name).parent
   container = "--bind ${parent}"
@@ -271,3 +289,19 @@ workflow old {
         .transpose()
         .view()
 }
+
+workflow TALON {
+     metadata_ch  = Channel.fromPath("/net/seq/data2/projects/amuravyova/nf-long-reads-align/list_for_talon_7_fetal.csv")
+        .splitCsv(header:true, sep:',')
+        .map(row -> tuple(row.ln, row.bam, row.bai, row.sam))
+        |talon
+}
+
+
+workflow QC_analisys {
+     metadata_ch  = Channel.fromPath("/net/seq/data2/projects/amuravyova/nf-long-reads-align/FETAL/list_last_8_fetal_LN")
+        .splitText()
+	.map { it.trim()}
+      	|QC
+}
+
