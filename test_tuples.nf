@@ -10,8 +10,9 @@ def set_key_for_group_tuple(ch) {
 
 
 process align_reads {
-    container "/home/amuravyova/nextflow/minimap2_v2.15dfsg-1-deb_cv1.sif"  //   container "docker://biocontainers/minimap2:v2.15dfsg-1-deb_cv1"
-    containerOptions "${get_container(params.genome_fasta)}"
+//    container "/home/amuravyova/nextflow/minimap2_v2.15dfsg-1-deb_cv1.sif"  //   container "docker://biocontainers/minimap2:v2.15dfsg-1-deb_cv1"
+//    containerOptions "${get_container(params.genome_fasta)}"
+    conda "${params.conda}"
     publishDir "${params.outdir}/bams/${ln}"
     tag "${ln}:${fastq}"
     cpus 5
@@ -58,8 +59,9 @@ process soft_clip_trimming {
 
 
 process transcriptclean {
-    container "/home/amuravyova/nextflow/transcriptclean_v2.0.2_cv1.sif"  //   container "biocontainers/transcriptclean:v2.0.2_cv1"
-    containerOptions "${get_container(params.genome_fasta)} ${get_container(params.spl_jnk)} ${get_container(params.known_variants_vcf)}"
+//    container "/home/amuravyova/nextflow/transcriptclean_v2.0.2_cv1.sif"  //   container "biocontainers/transcriptclean:v2.0.2_cv1"
+//    containerOptions "${get_container(params.genome_fasta)} ${get_container(params.spl_jnk)} ${get_container(params.known_variants_vcf)}"
+    conda "${params.conda}"
     publishDir "${params.outdir}/transcriptclean/${ln}"
     tag "${ln}:${sample_trim_sam}"
     cpus 5 
@@ -77,7 +79,7 @@ process transcriptclean {
     """ 
     head ${params.spl_jnk}
     head ${params.known_variants_vcf}
-    TranscriptClean -s ${sample_trim_sam} -g ${params.genome_fasta}  --spliceJns ${params.spl_jnk} --variants ${params.known_variants_vcf} -t ${task.cpus} -o "${ln}_${row_id}"  --primaryOnly  
+    transcriptclean -s ${sample_trim_sam} -g ${params.genome_fasta}  --spliceJns ${params.spl_jnk} --variants ${params.known_variants_vcf} -t ${task.cpus} -o "${ln}_${row_id}"  --primaryOnly  
     """
 }
 
@@ -126,6 +128,8 @@ process merge_files {
 
 process talon {
   publishDir "${params.outdir}/TALON"
+  tag "${ln}"
+  conda "${params.conda}"
   input:
     tuple  val(ln), path(name), path("${name}.bai"), path(name_sam)  
 //      path sample_trim_sam_onlyMD            
