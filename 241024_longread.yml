@@ -1,0 +1,35 @@
+name: long_read
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - minimap
+  - talon
+  - numpy
+  - pandas
+  - scikit-learn
+  - bedops
+  - bedtools
+  - curl
+  - git
+  - ipykernel
+  - jupyterlab
+  - libssh2
+  - matplotlib
+  - openssl
+  - pip
+  - pysam
+  - pysam
+  - samtools
+  - scipy
+  - seaborn
+  - setuptools
+  - ucsc-wigtobigwig
+  - umap-learn
+  - tar
+  - gcc
+  - gzip
+  - perl
+  - wget
+prefix: /home/amuravyova/anaconda3/envs/long_read/
