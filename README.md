@@ -53,7 +53,7 @@ and then install TranscriptClean:
 
 ## HOW TO RUN
 1. create `samples_file`
-2. set the required variable values (`samples_file`, `outdir`, `description`, `platform`)  in file _**params.config**_ 
+2. set the required variable values (`samples_file`, `outdir` and others if necessary)  in file _**params.config**_ 
 > [!CAUTION]
 > save file changes !
 3. run in tmux : 
