@@ -1,7 +1,6 @@
 # long-read-RNAseq
 PIPELINE for identifying and quantifying known and novel genes/isoforms in long-read RNA-seq data
 
-[link to description with pictures](https://docs.google.com/document/d/1mj8DaMMQsriclH1m1FKiJzLcJz12DW3rtCmNr7nHnaA/edit#heading=h.dawyqbpfox7p)
 
 
 ## OVERVIEW
@@ -24,18 +23,31 @@ In file `params.config`:
 Header : row_id,ln,pathway
 1 row - 1 pathway to read file 
 Example - _/net/seq/data2/projects/amuravyova/nf-long-reads-align/FETAL/11_20_fetal_with_pathways.csv_
+[Example how I made it (in the end of this file](https://docs.google.com/document/d/1ki__g-JYS-QLMGR_j41QImsv8JSt-LxytiMTCfEIBqs/edit?tab=t.0)
 
 * `outdir` - directory where you want to put the results
+
 * `description` - description of the date (does not affect the analysis)
 * `platform` - platform that was used for generating the data  (does not affect the analysis)
+* `build` -  the name of the reference genome build that the annotation describes, use a short and memorable name (does not affect the analysis)
+* `annotation`  - The name of the annotation (for metadata purposes, does not affect the analysis)
 
-**Variables could to be changed (please don’t touch them now)**
+**Variables could to be changed (be careful)**
 
 * `genome_fasta` - fasta file containing the reference genome used in mapping
 * `genome_gtf` - gtf file containing the reference annotation 
 * `spl_jnk` - high-confidence splice junction file This file is necessary if you want to correct noncanonical splice junctions
 * `known_variants_vcf` - vcf file containing variants
-* `conda`
+  [more detailed description of reference files and how I made them ](https://docs.google.com/document/d/1ki__g-JYS-QLMGR_j41QImsv8JSt-LxytiMTCfEIBqs/edit?tab=t.0)
+
+* `conda` - an environment with all the necessary packages to run the Pipeline (use default, but if you don't have access to my folder - please follow this instraction)
+`conda env create --file 241024_longread.yml`  this file exict in the repository (please change the last line `prefix`  before to use it)
+`conda activate long_read`
+and then install TranscriptClean
+`git clone git@github.com:mortazavilab/TranscriptClean.git
+cd TranscriptClean
+pip install -e .`
+
 
 ## HOW TO RUN
 1. create `samples_file`
