@@ -1,0 +1,14 @@
+samples_file = "/net/seq/data2/projects/amuravyova/nf-long-reads-align/FETAL/LN272961_fetal_with_pathways.csv"
+outdir = "/net/seq/data2/projects/amuravyova/nf-long-reads-align/FETAL_ref_v46_TEST_new_conda"
+genome_fasta = "/home/amuravyova/ref/human_GRCh38/GRCh38.primary_assembly.genome__CHR1-22XYM.fa"
+genome_gtf = "/home/amuravyova/ref/human_GRCh38/gencode.v46.annotation.gtf"
+spl_jnk = "/home/amuravyova/ref/human_GRCh38/SJs_for_gtf_v46_prim_ass_NEW.txt"
+known_variants_vcf = "/home/amuravyova/ref/human_GRCh38/GCF_000001405.40_UCSC_chr_names"
+conda = "/home/amuravyova/anaconda3/envs/long_read" // path to conda env
+
+
+build="human_GRCh38.primary_assembly_p14"
+annotation_v="human_gencode.v46"
+description="fetal_sample"
+platform="PromethIon"
+
